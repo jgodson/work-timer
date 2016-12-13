@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Jason Godson">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Work Timer</title>
+    <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #282C34;
+      color: white;
+    }
+    
+    .center {
+      text-align: center;
+    }
+    
+    input[name="timer-title-input"] {
+      width: 60%;
+      max-width: 800px;
+      border-radius: 8px;
+      font-size: 20px;
+      text-align: center;
+      outline: none;
+    }
+    
+    button[name="start-pause"] {
+      margin-left: 40px;
+      margin-right: 40px;
+      transform: scale(1.4);
+    }
+    
+    button[name="start-pause"]:hover {
+      margin-left: 60px;
+      margin-right: 60px;
+      transform: scale(1.8);
+    }
+    
+    button[name="complete"]:hover {
+      margin-left: 50px;
+      margin-right: 50px;
+      transform: scale(1.6);
+    }
+    
+    button[name="reset"]:hover {
+      margin-left: 50px;
+      margin-right: 50px;
+      transform: scale(1.6);
+    }
+    
+    .timer-display p {
+      font-size: 500%;
+      margin: 30px;
+    }
+    
+    button {
+      color: white;
+      text-transform: uppercase;
+      cursor: pointer;
+      width: 175px;
+      background-color: transparent;
+      border: 1px solid white;
+      padding: 6px 15px;
+      border-radius: 2px;
+      box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+      transition: all 400ms;
+    }
+    
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: scale(1.2);
+    }
+    
+    button:focus {
+      outline: none;
+    }
+    
+    table {
+      width: 60%;
+      margin: auto;
+      font-size: 150%;
+    }
+    
+    td {
+      width: 50%;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="timer center">
+      <div class="timer-title">
+        <h3 class='center'>Enter name for this project</h3>
+        <input name="timer-title-input" type="text" placeholder="Enter a name..." />
+      </div>
+      <div class="timer-display">
+        <p>
+          <span class='timer-display-hour'>00</span>:<span class="timer-display-minute">00</span>:<span class="timer-display-second">00</span>
+        </p>
+      </div>
+      <div class="timer-buttons center">
+        <button onclick="resetButtonClick()" name="reset">Reset Timer</button>
+        <button onclick="startButtonClick()" name="start-pause">Start Timer</button>
+        <button onclick="completeButtonClick()" name="complete">Complete Project</button>
+      </div>
+    </div>
+    <div class="timer-completed center">
+      <h3>Completed Projects</h3>
+      <div class="timer-list">
+        <table>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+      <button onclick="clearListClick()" name="clear">Clear Completed</button>
+    </div>
+    <script>
+    // Timer 'Class'
+    var Timer = function(timerContainer) {
+      this.element = timerContainer;
+      this.hours = 0;
+      this.minutes = 0;
+      this.seconds = 0;
+      this.pause = pause;
+      this.clear = clear;
+      this.start = start;
+      this.getTime = getTime;
+      this.count = count;
+      this.updateUI = updateUI;
+      this.isPaused = true;
+      this.interval = null;
+      
+      function count() {
+        this.seconds++;
+        if (this.seconds >= 60) {
+          this.minutes++;
+          this.seconds -= 60;
+        }
+        if (this.minutes >= 60) {
+          this.hours++;
+          this.minutes -= 60;
+        }
+        this.updateUI();
+      }
+      
+      function pause() {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+      
+      function clear() {
+        this.hours = 0;
+        this.minutes = 0;
+        this.seconds = 0;
+        startButtonClick(true); // stop timer & change button
+        this.updateUI();
+      }
+      
+      function start() {
+        this.interval = setInterval(this.count.bind(this), 1000);
+      }
+      
+      function getTime() {
+        var string = (this.hours > 9 ? this.hours : "0" + this.hours) + ":";
+        string += (this.minutes > 9 ? this.minutes : "0" + this.minutes) + ":";
+        string += this.seconds > 9 ? this.seconds : "0" + this.seconds;
+        return string;
+      }
+      
+      function updateUI() {
+        var string = this.getTime();
+        string = string.split(':'); // split into hours, minutes, seconds
+        this.element.querySelector('.timer-display-hour').innerText = string[0];
+        this.element.querySelector('.timer-display-minute').innerText = string[1];
+        this.element.querySelector('.timer-display-second').innerText = string[2];
+      }
+    }
+    
+    window.onload = init(); // Start script on page load
+    var projectTimer; // global timer variable
+    
+    // initialize timers, etc
+    function init() {
+      var data = loadList();
+      if (data) {
+        document.querySelector('.timer-list').innerHTML = data;
+      }
+      projectTimer = new Timer(document.querySelector('.timer-display'));
+    }
+    
+    function loadList() {
+      return localStorage.getItem('completed-projects');
+    }
+    
+    function saveList() {
+      var data = document.querySelector('.timer-list').innerHTML;
+      localStorage.setItem('completed-projects', data);
+    }
+    
+    // Button events
+    function startButtonClick(forceStop) {
+      var button = document.querySelector('button[name="start-pause"]');
+      if (!projectTimer.interval && !forceStop) {
+        projectTimer.start();
+        button.innerText = "Pause Timer";
+      }
+      else {
+        projectTimer.pause();
+        button.innerText = "Start Timer";
+      }
+    }
+    
+    function resetButtonClick() {
+      projectTimer.clear();
+    }
+    
+    function clearListClick() {
+      localStorage.clear();
+      document.querySelector('.timer-list').innerHTML = 
+        "<table><tbody></tbody></table>";
+    }
+    
+    function completeButtonClick() {
+      var name = document.querySelector('input[name="timer-title-input"]').value.trim();
+      if (!name.length) name = "Project"; // give it a name if nothing entered
+      var time = projectTimer.getTime();
+      var newRow = "<tr><td>" + name + "</td><td>" + time + "</td></tr>";
+      document.querySelector('.timer-list table tbody').innerHTML += newRow;
+      projectTimer.clear();
+      saveList();
+    }
+    </script>
+  </body>
+</html>
