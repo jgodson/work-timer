@@ -11,14 +11,20 @@
       height: 100%;
       background-color: #282C34;
       color: white;
+      margin: 0;
     }
     
     .center {
       text-align: center;
     }
     
+    .timer-buttons button {
+      display: block;
+      margin: 10px auto;
+    }
+    
     input[name="timer-title-input"] {
-      width: 60%;
+      width: 80%;
       max-width: 800px;
       border-radius: 8px;
       font-size: 20px;
@@ -27,32 +33,24 @@
     }
     
     button[name="start-pause"] {
-      margin-left: 40px;
-      margin-right: 40px;
       transform: scale(1.4);
     }
     
     button[name="start-pause"]:hover {
-      margin-left: 60px;
-      margin-right: 60px;
       transform: scale(1.8);
     }
     
-    button[name="complete"]:hover {
-      margin-left: 50px;
-      margin-right: 50px;
+    button[name="complete"]:hover, button[name="reset"]:hover {
       transform: scale(1.6);
     }
     
-    button[name="reset"]:hover {
-      margin-left: 50px;
-      margin-right: 50px;
-      transform: scale(1.6);
+    button[name="clear"] {
+      margin: 10px 0;
     }
     
     .timer-display p {
       font-size: 500%;
-      margin: 30px;
+      margin: 0;
     }
     
     button {
@@ -85,6 +83,38 @@
     
     td {
       width: 50%;
+    }
+    
+    @media only screen and (min-width: 736px) {
+      .timer-buttons button {
+        display: inline-block;;
+        margin: 0 0;
+      }
+      
+      button[name="start-pause"] {
+        margin-left: 40px;
+        margin-right: 40px;
+      }
+      
+      button[name="start-pause"]:hover {
+        margin-left: 60px;
+        margin-right: 60px;
+      }
+      
+      button[name="complete"]:hover, button[name="reset"]:hover {
+        margin-left: 50px;
+        margin-right: 50px;
+      }
+      
+      .timer-display p {
+        margin: 30px;
+      }
+    }
+    
+    @media only screen and (min-width: 500px) {
+      input[name="timer-title-input"] {
+        width: 60%;
+      }
     }
     </style>
   </head>
